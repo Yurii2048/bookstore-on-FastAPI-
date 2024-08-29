@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, TYPE_CHECKING
 
-from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy import String, ForeignKey, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -16,7 +16,11 @@ class Order(IntIdPkMixin, Base):
     order_status: Mapped[str]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # books_id: Mapped[int] = mapped_column(ForeignKey("books.id"))
-    date_create: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
+    date_create: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=datetime.utcnow(),
+        server_default=func.now(),
+    )
     description: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     # price: Mapped[int] = mapped_column(Integer)
 
