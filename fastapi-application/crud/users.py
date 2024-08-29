@@ -15,6 +15,16 @@ async def get_all_users(
     return result.all()
 
 
+async def get_user_by_username(
+        session: AsyncSession,
+        username: str,
+) -> User:
+    stmt = select(User).where(User.username == username)
+    user: User | None = await session.scalar(stmt)
+    print(user)
+    return user
+
+
 async def create_user(
     session: AsyncSession,
     user_create: UserCreate,
@@ -24,3 +34,8 @@ async def create_user(
     await session.commit()
     # await session.refresh(user)
     return user
+
+
+async def get_user_with_id(session: AsyncSession, user_id: int):
+    return await session.get(User, user_id)
+
