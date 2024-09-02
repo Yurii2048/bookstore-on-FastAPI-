@@ -59,3 +59,19 @@ async def get_user_with_orders(
     if result is None:
         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
     return result
+
+
+@router.post("/manipulations")
+async def add_to_order(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    order_id: int,
+    book_id: int,
+):
+    await orders_crud.add_book_in_order(session=session, order_id=order_id, book_id=book_id)
+    return {"message": "success"}
+
+
+@router.get("/all_all")
+async def get_all_orders_book(session: Annotated[AsyncSession, Depends(db_helper.session_getter)]):
+    result = await orders_crud.get_orders_with_books(session=session)
+    return result

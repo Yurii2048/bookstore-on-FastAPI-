@@ -1,8 +1,8 @@
-from sqlalchemy import select, Result
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
-from core.models import Order, User
+from core.models import Order, User, Book
 from core.schemas.order import OrderCreate
 
 
@@ -47,3 +47,30 @@ async def get_user_with_orders(user_id: int, session: AsyncSession,):
     ).where(User.id == user_id)
     user: User | None = await session.scalar(stmt)
     return user
+
+
+async def add_book_in_order(session: AsyncSession, order_id: int, book_id: int):
+    order = await session.scalar(
+        select(Order)
+        .where(Order.id == order_id)
+        .options(selectinload(Order.books))
+    )
+    book = await session.get(Book, book_id)
+    try:
+        order.books.append(book)
+        print("+++")
+    finally:
+        print("===")
+        await session.commit()
+
+
+async def get_orders_with_books(session: AsyncSession):
+    stmt = (
+        select(Order)
+        .options(
+            selectinload(Order.books)
+        )
+        .order_by(Order.id)
+    )
+    orders = await session.scalars(stmt)
+    return orders.all()
