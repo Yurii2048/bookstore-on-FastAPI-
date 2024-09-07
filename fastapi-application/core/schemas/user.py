@@ -1,14 +1,15 @@
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import EmailStr
 
 
 class UserBase(BaseModel):
     username: str
-    hashed_password: str
+    email: EmailStr
 
 
 class UserCreate(UserBase):
-    pass
+    password: str
 
 
 class UserRead(UserBase):
@@ -17,3 +18,12 @@ class UserRead(UserBase):
     )
 
     id: int
+
+
+class UserSchema(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    username: str
+    password: bytes
+    email: EmailStr | None = None
+    active: bool = True
