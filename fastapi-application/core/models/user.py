@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 class User(IntIdPkMixin, Base):
     username: Mapped[str] = mapped_column(unique=True)
-    hashed_password: Mapped[str] = mapped_column(String)
+    password: Mapped[bytes]
+    email: Mapped[str | None]
+    active: Mapped[bool] = mapped_column(default=True)
 
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
